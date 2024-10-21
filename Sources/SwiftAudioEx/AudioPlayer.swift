@@ -190,6 +190,10 @@ public class AudioPlayer: AVPlayerWrapperDelegate {
 
     // MARK: - Player Actions
 
+    func setVolume(_ volume: Float, fadeDuration: TimeInterval) {
+        wrapper.setVolume(volume, fadeDuration: fadeDuration)
+    }
+    
     /**
      Load an AudioItem into the manager.
 
