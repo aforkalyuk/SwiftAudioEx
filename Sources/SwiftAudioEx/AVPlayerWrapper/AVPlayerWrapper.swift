@@ -370,6 +370,10 @@ class AVPlayerWrapper: AVPlayerWrapperProtocol {
         }
     }
     
+    func setVolume(_ volume: Float, fadeDuration: TimeInterval) {
+        avPlayer.setVolume(volume, fadeDuration: fadeDuration)
+    }
+    
     // MARK: - Util
 
     private func clearCurrentItem() {

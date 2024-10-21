@@ -64,4 +64,6 @@ protocol AVPlayerWrapperProtocol: AnyObject {
     func unload()
     
     func reload(startFromCurrentTime: Bool)
+    
+    func setVolume(_ volume: Float, fadeDuration: TimeInterval)
 }
