@@ -104,6 +104,12 @@ extension AudioPlayer {
          - Note: It is only fired for instances of a QueuedAudioPlayer.
          */
         public let currentItem: AudioPlayer.Event<CurrentItemEventData> = AudioPlayer.Event()
+        
+        /**
+         Emitted when the queue of the player has changed.
+         - Important: Remember to dispatch to the main queue if any UI is updated in the event handler.
+         */
+        public let queueChanged: AudioPlayer.Event<()> = AudioPlayer.Event()
     }
     
     public typealias EventClosure<EventData> = (EventData) -> Void

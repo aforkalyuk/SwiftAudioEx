@@ -11,6 +11,7 @@ protocol QueueManagerDelegate: AnyObject {
     func onReceivedFirstItem()
     func onCurrentItemChanged()
     func onSkippedToSameCurrentItem()
+    func onQueueChanged()
 }
 
 class QueueManager<Element> {
@@ -60,6 +61,7 @@ class QueueManager<Element> {
                 if oldValue.count == 0 && items.count > 0 {
                     delegate?.onReceivedFirstItem()
                 }
+                delegate?.onQueueChanged()
             }
         }
     }
@@ -252,9 +254,14 @@ class QueueManager<Element> {
             try throwIfIndexInvalid(index: toIndex, name: "toIndex", max: Int.max)
             
             let item = items.remove(at: fromIndex)
-            self.items.insert(item, at: min(items.count, toIndex));
-            if (fromIndex == currentIndex) {
-                currentIndex = toIndex;
+            let index = min(items.count, toIndex)
+            self.items.insert(item, at: index);
+            if fromIndex < currentIndex, index >= currentIndex {
+                currentIndex -= 1
+            } else if fromIndex > currentIndex, index <= currentIndex {
+                currentIndex += 1
+            } else if fromIndex == currentIndex {
+                currentIndex = index
             }
         }
     }

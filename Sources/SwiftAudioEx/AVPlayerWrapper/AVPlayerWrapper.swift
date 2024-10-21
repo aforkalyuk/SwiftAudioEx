@@ -23,7 +23,7 @@ public enum PlaybackEndedReason: String {
 class AVPlayerWrapper: AVPlayerWrapperProtocol {
     // MARK: - Properties
     
-    fileprivate var avPlayer = AVPlayer()
+    private(set) var avPlayer = AVPlayer()
     private let playerObserver = AVPlayerObserver()
     internal let playerTimeObserver: AVPlayerTimeObserver
     private let playerItemNotificationObserver = AVPlayerItemNotificationObserver()
@@ -37,7 +37,7 @@ class AVPlayerWrapper: AVPlayerWrapperProtocol {
         label: "AVPlayerWrapper.stateQueue",
         attributes: .concurrent
     )
-
+    
     public init() {
         playerTimeObserver = AVPlayerTimeObserver(periodicObserverTimeInterval: timeEventFrequency.getTime())
 
@@ -328,7 +328,7 @@ class AVPlayerWrapper: AVPlayerWrapperProtocol {
             self.seek(to: initialTime)
         }
     }
-
+    
     func load(
         from url: String,
         type: SourceType = .stream,
@@ -349,12 +349,12 @@ class AVPlayerWrapper: AVPlayerWrapperProtocol {
             playbackFailed(error: AudioPlayerError.PlaybackError.invalidSourceUrl(url))
         }
     }
-
+    
     func unload() {
         clearCurrentItem()
         state = .idle
     }
-
+    
     func reload(startFromCurrentTime: Bool) {
         var time : Double? = nil
         if (startFromCurrentTime) {
@@ -368,6 +368,41 @@ class AVPlayerWrapper: AVPlayerWrapperProtocol {
         if let time = time {
             seek(to: time)
         }
+    }
+    
+    func setVolume(_ volume: Float, fadeDuration: Float, completion: (() -> Void)? = nil) -> Timer? {
+        return fadeVolume(from: self.volume, to: volume, duration: fadeDuration, completion: completion)
+    }
+    
+    func fadeVolume(from: Float, to: Float, duration: Float, completion: (() -> Void)? = nil) -> Timer? {
+        volume = from
+        guard from != to else { return nil }
+        let interval: Float = 0.1
+        let range = to - from
+        let step = (range * interval) / duration
+        
+        func reachedTarget() -> Bool {
+            guard volume >= 0, volume <= 1 else {
+                volume = to
+                return true
+            }
+            if to > from {
+                return volume >= to
+            }
+            return volume <= to
+        }
+        
+        return Timer.scheduledTimer(withTimeInterval: Double(interval), repeats: true, block: { [weak self] (timer) in
+            guard let self else { return }
+            DispatchQueue.main.async {
+                if !reachedTarget() {
+                    self.volume += step
+                } else {
+                    timer.invalidate()
+                    completion?()
+                }
+            }
+        })
     }
     
     // MARK: - Util

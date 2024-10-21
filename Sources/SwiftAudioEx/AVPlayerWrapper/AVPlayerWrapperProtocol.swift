@@ -11,6 +11,8 @@ import AVFoundation
 
 protocol AVPlayerWrapperProtocol: AnyObject {
     
+    var avPlayer: AVPlayer { get }
+    
     var state: AVPlayerWrapperState { get set }
     
     var playWhenReady: Bool { get set }
@@ -64,4 +66,8 @@ protocol AVPlayerWrapperProtocol: AnyObject {
     func unload()
     
     func reload(startFromCurrentTime: Bool)
+    
+    func setVolume(_ volume: Float, fadeDuration: Float, completion: (() -> Void)?) -> Timer?
+    
+    func fadeVolume(from: Float, to: Float, duration: Float, completion: (() -> Void)?) -> Timer?
 }

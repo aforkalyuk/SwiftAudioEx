@@ -233,4 +233,8 @@ public class QueuedAudioPlayer: AudioPlayer, QueueManagerDelegate {
     func onReceivedFirstItem() {
         try! queue.jump(to: 0)
     }
+    
+    func onQueueChanged() {
+        event.queueChanged.emit(data: ())
+    }
 }

@@ -20,6 +20,10 @@ public class AudioPlayer: AVPlayerWrapperDelegate {
 
     private(set) var currentItem: AudioItem?
 
+    public var player: AVPlayer {
+        return wrapper.avPlayer
+    }
+    
     /**
      Set this to false to disable automatic updating of now playing info for control center and lock screen.
      */
@@ -190,6 +194,14 @@ public class AudioPlayer: AVPlayerWrapperDelegate {
 
     // MARK: - Player Actions
 
+    public func setVolume(_ volume: Float, fadeDuration: Float, completion: (() -> Void)? = nil) -> Timer? {
+        return wrapper.setVolume(volume, fadeDuration: fadeDuration, completion: completion)
+    }
+    
+    public func fadeVolume(from: Float, to: Float, duration: Float, completion: (() -> Void)? = nil) -> Timer? {
+        return wrapper.fadeVolume(from: from, to: to, duration: duration, completion: completion)
+    }
+        
     /**
      Load an AudioItem into the manager.
 
